@@ -14,12 +14,18 @@ import re
 from urllib.parse import urlparse, urljoin
 import aiohttp
 
-# Use environment variable for OpenAI API key
+# Use environment variables for API keys
 openAI_key = os.environ.get('OPENAI_API_KEY')
+google_api_key = os.environ.get('GOOGLE_API_KEY')
+google_search_engine_id = os.environ.get('GOOGLE_SEARCH_ENGINE_ID')
 
-# Check if the API key is set
+# Check if the API keys are set
 if not openAI_key:
     raise ValueError("OPENAI_API_KEY environment variable is not set")
+if not google_api_key:
+    raise ValueError("GOOGLE_API_KEY environment variable is not set")
+if not google_search_engine_id:
+    raise ValueError("GOOGLE_SEARCH_ENGINE_ID environment variable is not set")
 
 client = AsyncOpenAI(api_key=openAI_key)
 
@@ -119,7 +125,7 @@ async def classify_impact(paper):
     )
     
     return response.choices[0].message.content.strip()
-async def get_author_email(author_name, session, api_key="AIzaSyDvCoej_7nf7aGr0dxKoiPim32a0vnYMps", search_engine_id="017576662512468239146:omuauf_lfve"):
+async def get_author_email(author_name, session):
     try:
         # Google Custom Search API URL
         search_url = "https://www.googleapis.com/customsearch/v1"
@@ -127,8 +133,8 @@ async def get_author_email(author_name, session, api_key="AIzaSyDvCoej_7nf7aGr0d
     
         # Parameters for the search API request
         params = {
-            'key': api_key,
-            'cx': search_engine_id,
+            'key': google_api_key,
+            'cx': google_search_engine_id,
             'q': query,
             'num': 3  # Limit the number of search results to 3 for now
         }
